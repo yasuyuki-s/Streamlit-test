@@ -22,26 +22,27 @@ class asset_model:
         my_bar = st.progress(0, text=progress_text)
         #入力された投資期間を年→月へ変換
         dur_m = dur_y * 12
-        my_bar.progress(10, text=progress_text)
+        my_bar.progress(10, text=progress_text) #プログレスバー出力
         # [(投資期間_月),(試行回数)]の正規分布N(μ,σ)に従う乱数行列として毎月の対数収益率を生成
         A1 = np.random.normal(self.mu_m, self.s_m,size=[dur_m,n])        
-        my_bar.progress(20, text=progress_text)
+        my_bar.progress(20, text=progress_text) #プログレスバー出力
         #次元を拡張し、[(投資期間_月),(投資期間_月),(試行回数)]の行列とする
         A2 = np.tile(A1,[dur_m,1,1])
-        my_bar.progress(40, text=progress_text)
+        my_bar.progress(40, text=progress_text) #プログレスバー出力
         #行列を転置し、[(試行回数),(投資期間_月),(投資期間_月)]の行列とする
         A3 = np.transpose(A2,(2,0,1))
-        my_bar.progress(60, text=progress_text)
+        my_bar.progress(60, text=progress_text) #プログレスバー出力
         #各試行の上三角行列を取得
         A4 = np.triu(A3)
-        my_bar.progress(80, text=progress_text)
+        my_bar.progress(80, text=progress_text) #プログレスバー出力
         #
         self.A = A4
         self.dur_m = dur_m
-        my_bar.progress(100, text=progress_text)
+        my_bar.progress(100, text=progress_text) #プログレスバー出力
         
     #初期投資額x_init, 毎月積立額delta_mを投資した場合の資産推移を計算
     def exercise(self, x_init, delta_m):
+        #プログレスバー出力
         progress_text = "Investment simulation in progress."
         my_bar = st.progress(0, text=progress_text)
         #月別の投資額のリスト
@@ -71,6 +72,7 @@ class asset_model:
             
             #累計投資額を格納
             capital.append(x_tmp.sum())
+            #プログレスバー出力
             my_bar.progress(i/(self.dur_m-1), text=progress_text)
             
         #1年毎の各種統計値を計算
@@ -87,7 +89,6 @@ class asset_model:
         
         #計算結果をDataFrameに格納
         df_result = pd.DataFrame(np.transpose([year,mean,p10,p30,p50,p70,p90,capital]),columns=["Year","Mean","P10","P30","P50","P70","P90","Capital"])
-        pd.options.display.float_format = '{:.1f}'.format
 
         #グラフ出力
         fig = go.Figure()
@@ -130,7 +131,7 @@ delta_m = st.number_input("Monthly investment amount", min_value=0, max_value=No
 
 # 試行回数
 n = st.number_input("Number of trials for Monte Carlo Calculation", min_value=100, max_value=None, value=2000, step=1, help="モンテカルロ法による試行回数。Streamlit Cloudのリソース制約によりエラーが出る場合は小さい値を設定してください。")
-model = asset_model(mu,s)
+
 if st.button("Run"):
 	#リターンmu、リスクsのモデルを定義
 	model = asset_model(mu,s)
@@ -141,10 +142,8 @@ if st.button("Run"):
 
 
 st.markdown("""
-## ソースコード・解説
-GitHub  
-https://github.com/yasuyuki-s/Streamlit-test
+## 解説
 
 Qiita  
-https://qiita.com/yasuyuki-s/items/54a89389cbcfd3c625c9
+https://qiita.com/yasuyuki-s/items/4d22c9ab1f5005b64ae5
  """)
