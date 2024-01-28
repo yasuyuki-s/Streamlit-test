@@ -129,7 +129,7 @@ x_init = st.number_input("Initial investment amount", min_value=0, max_value=Non
 delta_m = st.number_input("Monthly investment amount", min_value=0, max_value=None, value=10, step=1, help="毎月の積立額")
 
 # 試行回数
-n = 1000
+n = st.number_input("Number of trials for Monte Carlo Calculation", min_value=100, max_value=None, value=2000, step=1, help="モンテカルロ法による試行回数。Streamlit Cloudのリソース制約によりエラーが出る場合は小さい値を設定してください。")
 model = asset_model(mu,s)
 if st.button("Run"):
 	#リターンmu、リスクsのモデルを定義
