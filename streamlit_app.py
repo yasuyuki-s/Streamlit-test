@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
-from IPython.display import display
 
 #対数収益率の正規分布を仮定した長期投資シミュレーションモデル
 class asset_model:
