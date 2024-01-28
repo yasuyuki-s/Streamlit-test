@@ -1,6 +1,5 @@
 #ライブラリ読み込み
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
@@ -92,16 +91,18 @@ class asset_model:
         pd.options.display.float_format = '{:.1f}'.format
 
         #グラフ出力
-        fig2 = go.Figure()
-        fig2.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P90"],name="P90"))
-        fig2.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P10"],name="P10", fill="tonexty"))
-        fig2.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P70"],name="P70"))
-        fig2.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P30"],name="P30", fill="tonexty"))
-        fig2.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P50"],name="P50"))
-        fig2.add_trace(go.Scatter(x=df_result["Year"],y=df_result["Capital"],name="Capital"))
-        fig2.update_layout(hovermode="x")
-        fig2.update_layout(title="Result of Simulation", xaxis_title="Year")
-        st.plotly_chart(fig2, use_container_width=True)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P90"],name="P90"))
+        fig.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P10"],name="P10", fill="tonexty"))
+        fig.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P70"],name="P70"))
+        fig.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P30"],name="P30", fill="tonexty"))
+        fig.add_trace(go.Scatter(x=df_result["Year"],y=df_result["P50"],name="P50"))
+        fig.add_trace(go.Scatter(x=df_result["Year"],y=df_result["Capital"],name="Capital"))
+        fig.update_layout(hovermode="x")
+        fig.update_layout(title="Result of Simulation", xaxis_title="Year")
+        st.plotly_chart(fig, use_container_width=True)
+        
+        #DataFrame出力
         df_result = df_result.round().astype(int)
         st.dataframe(df_result)
       
