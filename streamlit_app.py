@@ -129,7 +129,7 @@ x_init = st.number_input("Initial investment amount", min_value=0, max_value=Non
 delta_m = st.number_input("Monthly investment amount", min_value=0, max_value=None, value=10, step=1, help="毎月の積立額")
 
 # 試行回数
-n = 2000
+n = 1000
 model = asset_model(mu,s)
 if st.button("Run"):
 	#リターンmu、リスクsのモデルを定義
