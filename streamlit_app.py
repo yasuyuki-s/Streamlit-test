@@ -122,7 +122,7 @@ s = st.number_input("Annualized Risk(%)", min_value = 0.0, max_value=None, value
 
 
 # 投資期間（年）
-dur_y = st.number_input("Investment Duration（year）", min_value=1, max_value=None, value=10, step=1, help="積立投資を行う期間")
+dur_y = st.number_input("Investment Duration（year）", min_value=1, max_value=20, value=10, step=1, help="積立投資を行う期間。Streamlit Cloudのリソース制約上、上限は20年")
 
 # 初期投資額
 x_init = st.number_input("Initial investment amount", min_value=0, max_value=None, value=0, step=1, help="初期投資額")
