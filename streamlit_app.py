@@ -23,20 +23,9 @@ class asset_model:
         #入力された投資期間を年→月へ変換
         dur_m = dur_y * 12
         my_bar.progress(10, text=progress_text) #プログレスバー出力
-        # [(投資期間_月),(試行回数)]の正規分布N(μ,σ)に従う乱数行列として毎月の対数収益率を生成
-        A1 = np.random.normal(self.mu_m, self.s_m,size=[dur_m,n])        
-        my_bar.progress(20, text=progress_text) #プログレスバー出力
-        #次元を拡張し、[(投資期間_月),(投資期間_月),(試行回数)]の行列とする
-        A2 = np.tile(A1,[dur_m,1,1])
-        my_bar.progress(40, text=progress_text) #プログレスバー出力
-        #行列を転置し、[(試行回数),(投資期間_月),(投資期間_月)]の行列とする
-        A3 = np.transpose(A2,(2,0,1))
-        my_bar.progress(60, text=progress_text) #プログレスバー出力
-        #各試行の上三角行列を取得
-        A4 = np.triu(A3)
-        my_bar.progress(80, text=progress_text) #プログレスバー出力
-        #
-        self.A = A4
+        # [(試行回数), (投資期間_月)]の正規分布N(μ,σ)に従う乱数行列として毎月の対数収益率を生成
+        self.A = np.random.normal(self.mu_m, self.s_m,size=[n,dur_m])        
+        
         self.dur_m = dur_m
         my_bar.progress(100, text=progress_text) #プログレスバー出力
         
@@ -58,15 +47,16 @@ class asset_model:
         #総資産額の推移を1年毎(12ヶ月毎)に集計する
         for i in range(11, self.dur_m,12):
             #集計時点までの対数収益率行列を切り出し
-            A_tmp = self.A[:,:i+1, :i+1] 
+            A_tmp = self.A[:,:i+1] 
             #集計時点までの投資額のリストを切り出し
             x_tmp = x[:i+1]
-            #対数収益率行列の各行の和を計算
-            A_tmp = A_tmp.sum(axis=2)
+            #対数収益率行列の後ろ向き累積和（Suffix sum) 、連続複利ベースの期間終了時点の収益率を計算
+            rev_cum = np.cumsum(A_tmp[:, ::-1], axis=1)
+            lr_tmp = rev_cum[:, ::-1]
             #対数収益率から、価格変動比へ変換
-            A_tmp = np.exp(A_tmp)
+            r_tmp = np.exp(lr_tmp)
             #各試行の、投資期間経過後の資産額を計算
-            ta = np.dot(A_tmp,x_tmp)
+            ta = np.dot(r_tmp,x_tmp)
             #計算結果を格納
             ta_list.append(ta)
             
@@ -122,7 +112,7 @@ s = st.number_input("Annualized Risk(%)", min_value = 0.0, max_value=None, value
 
 
 # 投資期間（年）
-dur_y = st.number_input("Investment Duration（year）", min_value=1, max_value=20, value=10, step=1, help="積立投資を行う期間。Streamlit Cloudのリソース制約上、上限は20年")
+dur_y = st.number_input("Investment Duration（year）", min_value=1, max_value=30, value=10, step=1, help="積立投資を行う期間。Streamlit Cloudのリソース制約上、上限は30年")
 
 # 初期投資額
 x_init = st.number_input("Initial investment amount", min_value=0, max_value=None, value=0, step=1, help="初期投資額")
@@ -130,7 +120,7 @@ x_init = st.number_input("Initial investment amount", min_value=0, max_value=Non
 delta_m = st.number_input("Monthly investment amount", min_value=0, max_value=None, value=10, step=1, help="毎月の積立額")
 
 # 試行回数
-n = st.number_input("Number of trials for Monte Carlo Calculation", min_value=100, max_value=3000, value=2000, step=1, help="モンテカルロ法による試行回数。Streamlit Cloudのリソース制約上、上限は3000")
+n = st.number_input("Number of trials for Monte Carlo Calculation", min_value=100, max_value=20000, value=10000, step=1, help="モンテカルロ法による試行回数。Streamlit Cloudのリソース制約上、上限は20000")
 
 if st.button("Run"):
 	#リターンmu、リスクsのモデルを定義
